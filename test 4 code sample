@@ -1,0 +1,149 @@
+#!"C:\Program Files\Python311"
+import matplotlib.pyplot as plot
+import csv
+import numpy as np
+
+#This program takes fuel types (regular, super and diesel), and processes the data. Either by plotting sales, or by specific date, it can calculate
+#total income
+plot.rcParams["figure.figsize"] = [7.00, 3.50]
+plot.rcParams["figure.autolayout"] = True
+
+print( "Rojan Mercado" )
+
+fuel = ["Regular","Super","Diesel"]
+prices = [2.295, 2.385, 1.885]
+sales = [87.65, 44.20, 39.83, 28.32, 11.54, 37.09, 52.55, 64.94, 45.18, 12.8, 52.17, 19.08]
+
+#printing the sales
+print("")
+print("Sales:")
+for amount in sales:
+    print("{} liters sold".format(amount))
+
+#printing initial sales amount
+print("")
+totalSales = sum(sales)
+print(totalSales)
+
+#initialising user input
+print("what is the amount of petrol to be sold at the pump?")
+userAmount = int(input("> "))
+
+#printing new sales amount
+print("")
+sales.append(userAmount)
+newTotalSales = sum(sales)
+print(newTotalSales)
+
+#-----------------#
+
+#plotting the sales as sale numbers
+saleList = []
+for i in range(len(sales)):
+    numberOfSale = "#{}".format(i)
+    saleList.append(numberOfSale)
+
+plot.bar(saleList, sales, color='orange')
+
+#setting the plot labels and showing
+plot.title('Amount of gasoline sold')
+plot.xlabel('Sale number')
+plot.ylabel('Amount sold (L)')
+
+plot.show()
+#-----------------#
+
+#checking if the total amount of fuel sold was greater than capacity
+with open('sales.txt', 'w') as f:
+    for sale in sales:
+        print('%f' % sale, file = f)
+
+f.close()
+
+if totalSales > 500:
+    print("You have run out of fuel")
+else:
+    print("Amount of fuel left in the tank: {:.2f} liters".format(500 - totalSales))
+
+#-----------------#
+    
+with open('tuesday+header.csv', 'r', encoding = 'utf-8-sig') as tuesdayData:
+  
+    # Return a reader object which will
+    # iterate over lines in the given csvfile
+    tuesdayDataRow = csv.reader(tuesdayData)
+    
+    # convert string to list
+    fullTuesdayData = list(tuesdayDataRow)
+
+#printing the complex data in neat columns    
+print("")
+for row in fullTuesdayData:
+    print("{: >20} {: >20} {: >20}".format(*row))
+
+print("")
+
+#splitting the complex data into its counterparts
+pumpNumber = [pumpNumber[0] for pumpNumber in fullTuesdayData]
+timeSold = [timeSold[1] for timeSold in fullTuesdayData]
+fuelType = [fuelType[2] for fuelType in fullTuesdayData]
+amountFuel = [amountFuel[3] for amountFuel in fullTuesdayData]
+
+regularSold = 0
+superSold = 0
+dieselSold = 0
+
+#calculating how much was sold for each fuel type
+counter = 0
+for i in fuelType:
+    if i == "Regular":
+        regularSold += float(amountFuel[counter])
+    elif i == "Super":
+        superSold += float(amountFuel[counter])
+    elif i == "Diesel":
+        dieselSold += float(amountFuel[counter])
+    counter += 1
+
+#displaying the results
+print("Amount of Regular fuel sold: {:.2f} liters".format(regularSold))
+print("Amount of Super fuel sold: {:.2f} liters".format(superSold))
+print("Amount of Diesel fuel sold: {:.2f} liters".format(dieselSold))
+
+#compiling the regular, super and diesel income sold into one
+regularPrice = prices[0]
+superPrice = prices[1]
+dieselPrice = prices[2]
+
+regularIncome = regularSold * regularPrice
+superIncome = superSold * superPrice
+dieselIncome = dieselSold * dieselPrice
+
+totalFuelIncome = regularIncome + superIncome + dieselIncome
+
+print("")
+print("The total money received for fuel sales for Tuesday was ${:.2f}".format(totalFuelIncome))
+
+#------------------#
+
+def fuelCost(quantityFuel, fuelClass):
+    
+    fuelType = fuel.index(fuelClass)
+    fuelPrice = prices[fuelType]
+
+    costFuel = fuelPrice * quantityFuel
+
+    return costFuel
+
+#------------------#
+
+#checking for minimum sales
+fuelSale = []
+for sale in range(len(amountFuel)):
+    if sale != 0:
+        fuelSale.append(fuelCost(float(amountFuel[sale]), fuelType[sale]))
+
+
+for minimumSale in range(len(fuelSale)):
+    if fuelSale[minimumSale] < 10:
+        print("Sale Number {} was a sale less than $10".format(minimumSale))
+

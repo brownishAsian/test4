@@ -79,7 +79,7 @@ with open('tuesday+header.csv', 'r', encoding = 'utf-8-sig') as tuesdayData:
 #printing the complex data in neat columns    
 print("")
 for row in fullTuesdayData:
-    print("{: >20} {: >20} {: >20}".format(*row))
+    print("{: >20} {: >20} {: >20} {: >20}".format(*row))
 
 print("")
 

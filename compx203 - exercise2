@@ -1,0 +1,30 @@
+.text
+.global print
+print:
+addi $7,$0,10000 # Set initial divisor for digit extraction
+lw $5,0($sp) # Load input number from stack
+subui $sp,$sp,4 # Adjust stack for local storage
+sw $6,2($sp)
+sw $7,3($sp) # Save temp registers
+sw $8,4($sp)
+sw $ra,5($sp) # Save return address (from main code)
+j LoopStart #start the loop
+LoopStart:
+lw $6,1($sp)
+div $6, $5, $7 #Extract the next least significant digit
+remi $6, $6, 10
+addi $6, $6, 0x30 # Convert digit to ASCII (by adding 48, '0')
+sw $6, 0($sp) # Store ASCII char back on stack
+jal putc # Call char output subroutine
+seqi $8,$7,1
+bnez $8,LoopEnd # Exit loop if divisor is 1
+divi $7,$7,10 # Reduce divisor for next digit
+j LoopStart
+LoopEnd:
+# Restore temp registers
+lw $6, 2($sp)
+lw $7, 3($sp)
+lw $8, 4($sp)
+lw $ra, 5($sp) # Restore return address
+addui $sp, $sp, 4 # Reset stack pointer
+jr $ra # Return to the main part of the code
